@@ -8,6 +8,11 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
@@ -15,6 +20,7 @@ import java.util.Calendar;
 public class AgeCalculate extends AppCompatActivity {
 
     private int temp;
+    private AdView adView;
 
     FloatingActionButton fabDate;
     TextView tvAge;
@@ -95,6 +101,17 @@ public class AgeCalculate extends AppCompatActivity {
 
             }
         });
+
+        // AdMob Advertising
+        MobileAds.initialize(AgeCalculate.this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
     }
     private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {

@@ -8,6 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 public class MainActivityFemale extends AppCompatActivity {
 
     private Button btnFurtherF;
@@ -15,6 +21,8 @@ public class MainActivityFemale extends AppCompatActivity {
     private String year;
     private String month;
     private String day;
+
+    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +49,18 @@ public class MainActivityFemale extends AppCompatActivity {
                 openActivityFurtherAgeF();
             }
         });
+
+        // AdMob Advertising
+        MobileAds.initialize(MainActivityFemale.this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
     }
     public void openActivityFurtherAgeF(){
         Intent intent = new Intent(this, AgeCalculate.class);
