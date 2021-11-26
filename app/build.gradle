@@ -38,6 +38,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-ads:20.5.0'
 
+    implementation 'com.google.android.play:core:1.9.1'
+
 //    // For apps targeting Android 12, add WorkManager dependency.
 //    constraints {
 //        implementation('androidx.work:work-runtime:2.7.0') {

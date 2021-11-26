@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -20,6 +21,11 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.review.testing.FakeReviewManager;
+import com.google.android.play.core.tasks.Task;
 
 import java.util.Calendar;
 
@@ -65,10 +71,15 @@ public class AgeCalculate extends AppCompatActivity {
 
     private String selectedDate;
 
+    private ReviewManager manager;
+    private ReviewInfo reviewInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_age_calculate);
+
+        init();
 
 
         birth_y = getIntent().getStringExtra("key_birth_year");
@@ -109,6 +120,9 @@ public class AgeCalculate extends AppCompatActivity {
 
             }
         });
+
+
+
 
         // AdMob Advertising
         MobileAds.initialize(AgeCalculate.this, new OnInitializationCompleteListener() {
@@ -153,6 +167,25 @@ public class AgeCalculate extends AppCompatActivity {
         }, 2000);
 
     }
+
+    private void init() {
+        // review setup
+        manager = ReviewManagerFactory.create(this);
+      //  manager = new FakeReviewManager(this);
+
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // We can get the ReviewInfo object
+                reviewInfo = task.getResult();
+            } else {
+                // There was some problem, log or handle the error code.
+                Toast.makeText(AgeCalculate.this, "There was some error while accessing review info", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
     private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -209,5 +242,19 @@ public class AgeCalculate extends AppCompatActivity {
         }
 
         return age;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(reviewInfo!=null){
+            Task<Void> flow = manager.launchReviewFlow(AgeCalculate.this, reviewInfo);
+            flow.addOnCompleteListener(task -> {
+                // The flow has finished. The API does not indicate whether the user
+                // reviewed or not, or even whether the review dialog was shown. Thus, no
+                // matter the result, we continue our app flow.
+            });
+        }
+        super.onBackPressed();
+
     }
 }
